@@ -6,4 +6,4 @@ class RatingsTracker:
     ???
 
   def top: Int =
-    ???
+    -1
