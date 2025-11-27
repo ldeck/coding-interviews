@@ -13,3 +13,9 @@ class RatingsTrackerSpec extends AnyFlatSpec with should.Matchers:
     val tracker = RatingsTracker()
     tracker.addRating(productId = 1, rating = 2)
     tracker.top shouldBe 1
+
+  it should "handle multiple product ratings" in:
+    val tracker = RatingsTracker()
+    tracker.addRating(productId = 1, rating = 2)
+    tracker.addRating(productId = 2, rating = 1)
+    tracker.top shouldBe 1
