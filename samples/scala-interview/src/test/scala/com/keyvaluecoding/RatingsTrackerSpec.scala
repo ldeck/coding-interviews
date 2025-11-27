@@ -22,6 +22,29 @@ class RatingsTrackerSpec extends AnyFlatSpec with should.Matchers:
     ingest(Rating(productId = 1, rating = 2))
     top shouldBe 1
 
-  it should "handle multiple product ratings" in new Tester:
+  it should "handle multiple ratings for unique products" in new Tester:
     ingest(Rating(productId = 1, rating = 2),Rating(productId = 2, rating = 1))
+    top shouldBe 1
+
+  it should "handle multiple ratings per product" in new Tester:
+    ingest(
+      Rating(productId = 1, rating = 2),
+      Rating(productId = 2, rating = 1),
+      Rating(productId = 2, rating = 3),
+    )
+    top shouldBe 2
+
+  it should "handle multiple combined ratings per product" in new Tester:
+    ingest(
+      Rating(productId = 1, rating = 1),
+      Rating(productId = 1, rating = 2),
+      Rating(productId = 1, rating = 3),
+      Rating(productId = 1, rating = 4),
+      Rating(productId = 1, rating = 5),
+      Rating(productId = 2, rating = 1),
+      Rating(productId = 2, rating = 2),
+      Rating(productId = 2, rating = 2),
+      Rating(productId = 2, rating = 4),
+      Rating(productId = 2, rating = 5),
+    )
     top shouldBe 1
