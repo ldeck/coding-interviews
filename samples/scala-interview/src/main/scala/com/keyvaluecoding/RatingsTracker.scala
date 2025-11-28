@@ -5,6 +5,7 @@ import scala.collection.*
 
 case class Vote(productId: Int, rating: Int)
 case class Stat(productId: Int, rating: Float)
+case class Totals(votes: Int, rating: Float)
 
 case class AccumulatedRating(productId: Int, val votes: Int = 0, private val accum: Int = 0, when: Instant = Instant.now())
     extends Ordered[AccumulatedRating]:
@@ -34,7 +35,7 @@ case class AccumulatedRating(productId: Int, val votes: Int = 0, private val acc
 class RatingsTracker(
   private val ratings: mutable.Set[AccumulatedRating] = mutable.SortedSet(),
   private val keyed: mutable.Map[Int, AccumulatedRating] = mutable.HashMap(),
-  private var count: Int = 0
+  private var avg: AccumulatedRating = AccumulatedRating(productId = Int.MinValue)
 ):
 
   def addRating(productId: Int, rating: Int): Unit =
@@ -48,12 +49,12 @@ class RatingsTracker(
         AccumulatedRating(productId = productId)
 
     val next = existing.amended(vote = input)
-    count += 1
     ratings += next
     keyed.put(productId, next)
+    avg = avg.amended(input)
 
-  def allVotes: Int =
-    count
+  def totals: Totals =
+    Totals(votes = avg.votes, rating = avg.rating)
 
   def stats: Seq[Stat] =
     ratings.toSeq.map(r => Stat(productId = r.productId, rating = r.rating))
