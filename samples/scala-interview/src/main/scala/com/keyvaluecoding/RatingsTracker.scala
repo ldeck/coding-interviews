@@ -4,6 +4,7 @@ import java.time.Instant
 import scala.collection.*
 
 case class Vote(productId: Int, rating: Int)
+case class Stat(productId: Int, rating: Float)
 
 case class AccumulatedRating(productId: Int, private val votes: Int = 0, private val accum: Int = 0, when: Instant = Instant.now())
     extends Ordered[AccumulatedRating]:
@@ -48,6 +49,9 @@ class RatingsTracker(
     val next = existing.amended(vote = input)
     ratings += next
     keyed.put(productId, next)
+
+  def stats: Seq[Stat] =
+    ratings.toSeq.map(r => Stat(productId = r.productId, rating = r.rating))
 
   def top: Int =
     this.ratings.lastOption
