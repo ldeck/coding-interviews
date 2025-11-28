@@ -3,22 +3,32 @@ package com.keyvaluecoding
 import java.time.Instant
 import scala.collection.*
 
-case class Rating(productId: Int, rating: Int, when: Instant = Instant.now())
+case class Vote(productId: Int, rating: Int)
 
 case class AccumulatedRating(productId: Int, private val votes: Int = 0, private val accum: Int = 0, when: Instant = Instant.now())
     extends Ordered[AccumulatedRating]:
 
-  val rating = accum.toDouble / votes
-
-  def append(rating: Rating): AccumulatedRating =
-    copy(votes = votes + 1, accum = accum + rating.rating)
-
+  /**
+  * Accumulated ratings are ascendingly ordered as per their rawRating
+  * otherwise by when they were most recent change.
+  */
   override def compare(that: AccumulatedRating): Int =
-    if (rating == that.rating)
+    if (rawRating == that.rawRating)
       when.compareTo(that.when)
     else
-      rating.compare(that.rating)
+      rawRating.compare(that.rawRating)
 
+  /**
+  * Value of the raw average rating given to this product.
+  */
+  val rawRating: Double = accum.toDouble / votes
+  /**
+  * Value of the average public star rating, rounded to the nearest 0.5.
+  */
+  val rating: Float = math.round(rawRating * 2) / 2.0f
+
+  def amended(vote: Vote): AccumulatedRating =
+    copy(votes = votes + 1, accum = accum + vote.rating)
 
 class RatingsTracker(
   private val ratings: mutable.Set[AccumulatedRating] = mutable.SortedSet(),
@@ -26,7 +36,7 @@ class RatingsTracker(
 ):
 
   def addRating(productId: Int, rating: Int): Unit =
-    val input = Rating(productId = productId, rating = rating)
+    val input = Vote(productId = productId, rating = rating)
     val existing = keyed.get(productId) match
       case Some(prev) =>
         ratings -= prev
@@ -35,7 +45,7 @@ class RatingsTracker(
       case _ =>
         AccumulatedRating(productId = productId)
 
-    val next = existing.append(rating = input)
+    val next = existing.amended(vote = input)
     ratings += next
     keyed.put(productId, next)
 
