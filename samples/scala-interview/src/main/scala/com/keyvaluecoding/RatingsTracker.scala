@@ -33,7 +33,8 @@ case class AccumulatedRating(productId: Int, val votes: Int = 0, private val acc
 
 class RatingsTracker(
   private val ratings: mutable.Set[AccumulatedRating] = mutable.SortedSet(),
-  private val keyed: mutable.Map[Int, AccumulatedRating] = mutable.HashMap()
+  private val keyed: mutable.Map[Int, AccumulatedRating] = mutable.HashMap(),
+  private var count: Int = 0
 ):
 
   def addRating(productId: Int, rating: Int): Unit =
@@ -47,10 +48,12 @@ class RatingsTracker(
         AccumulatedRating(productId = productId)
 
     val next = existing.amended(vote = input)
+    count += 1
     ratings += next
     keyed.put(productId, next)
 
-  def allVotes: Int = ratings.toSeq.map(_.votes).sum
+  def allVotes: Int =
+    count
 
   def stats: Seq[Stat] =
     ratings.toSeq.map(r => Stat(productId = r.productId, rating = r.rating))
