@@ -68,3 +68,20 @@ class RatingsTrackerSpec extends AnyFlatSpec with should.Matchers:
       Stat(productId = 2, rating = 3.0),
       Stat(productId = 1, rating = 3.0),
       Stat(productId = 3, rating = 3.5))
+
+  "The epic 3" should "provide the total number of votes" in new Tester:
+    ingest(
+      Vote(productId = 1, rating = 1),
+      Vote(productId = 1, rating = 2),
+      Vote(productId = 1, rating = 3),
+      Vote(productId = 1, rating = 4),
+      Vote(productId = 1, rating = 5),
+      Vote(productId = 2, rating = 1),
+      Vote(productId = 2, rating = 2),
+      Vote(productId = 2, rating = 2),
+      Vote(productId = 2, rating = 4),
+      Vote(productId = 2, rating = 5),
+      Vote(productId = 3, rating = 4),
+      Vote(productId = 3, rating = 3),
+    )
+    tracker.allVotes shouldBe 12
