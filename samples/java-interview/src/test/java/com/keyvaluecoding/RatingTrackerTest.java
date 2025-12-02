@@ -31,4 +31,12 @@ public class RatingTrackerTest {
         tracker.add(new Vote(productId, rating));
         assertThat(tracker.top()).isEqualTo(productId);
     }
+
+    @Test
+    public void shouldReturnHighestRatingProductId() {
+        tracker.add(new Vote(1, 3));
+        tracker.add(new Vote(2, 3));
+        tracker.add(new Vote(3, 1));
+        assertThat(tracker.top()).isEqualTo(2);
+    }
 }

@@ -1,14 +1,18 @@
 package com.keyvaluecoding;
 
+import java.util.TreeSet;
+
 public class RatingTracker {
 
-    private Vote vote;
+    private final TreeSet<Vote> votes = new TreeSet<>();
 
     public void add(Vote vote) {
-        this.vote = vote;
+        this.votes.add(vote);
     }
 
     public int top() {
-        return vote == null ? -1 : vote.productId();
+        return this.votes.isEmpty()
+                ? -1
+                : votes.last().productId();
     }
 }
