@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class RatingTrackerTest {
+class RatingTrackerTest {
 
     private RatingTracker tracker;
 
@@ -17,7 +17,7 @@ public class RatingTrackerTest {
     }
 
     @Test
-    public void shouldBeEmptyByDefault() {
+    void shouldBeEmptyByDefault() {
         assertThat(tracker.top()).isEqualTo(-1);
     }
 
@@ -27,16 +27,28 @@ public class RatingTrackerTest {
             "3,1",
             "7,2"
     })
-    public void shouldReturnSingleRatingProductId(int productId, int rating) {
+    void shouldReturnSingleRatingProductId(int productId, int rating) {
         tracker.add(new Vote(productId, rating));
         assertThat(tracker.top()).isEqualTo(productId);
     }
 
     @Test
-    public void shouldReturnHighestRatingProductId() {
+    void shouldReturnHighestRatingProductId() {
         tracker.add(new Vote(1, 3));
         tracker.add(new Vote(2, 3));
         tracker.add(new Vote(3, 1));
         assertThat(tracker.top()).isEqualTo(2);
+    }
+
+    @Test
+    void shouldReturnHighestCombinedRatingProductId() {
+        tracker.add(new Vote(1, 1));
+        tracker.add(new Vote(1, 1));
+        tracker.add(new Vote(1, 1));
+        tracker.add(new Vote(1, 1));
+        tracker.add(new Vote(2, 1));
+        tracker.add(new Vote(2, 2));
+        tracker.add(new Vote(3, 3));
+        assertThat(tracker.top()).isOne();
     }
 }
