@@ -51,4 +51,22 @@ class RatingTrackerTest {
         tracker.add(new Vote(3, 3));
         assertThat(tracker.top()).isOne();
     }
+
+    @Test
+    void shouldReturnAllProductsWithAverageRatings() {
+        tracker.add(new Vote(1, 1));
+        tracker.add(new Vote(1, 1));
+        tracker.add(new Vote(1, 1));
+        tracker.add(new Vote(1, 1));
+        tracker.add(new Vote(2, 2));
+        tracker.add(new Vote(2, 3));
+        tracker.add(new Vote(3, 3));
+        var averages = tracker.averages();
+        System.out.println("averages: " + averages);
+        assertThat(tracker.averages()).containsExactly(
+                new Statistic(1, 4, 1.0f),
+                new Statistic(2, 2, 2.5f),
+                new Statistic(3, 1, 3.0f)
+        );
+    }
 }

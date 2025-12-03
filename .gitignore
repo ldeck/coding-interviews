@@ -4,3 +4,4 @@ target/
 .bloop/
 .bsp/
 .classpath
+.idea/

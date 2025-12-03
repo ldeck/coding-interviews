@@ -1,8 +1,7 @@
 package com.keyvaluecoding;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class RatingTracker {
 
@@ -13,12 +12,21 @@ public class RatingTracker {
         var current = cache.get(vote.productId());
         if (current != null) {
             votes.remove(current);
-            current = new Vote(vote.productId(), vote.vote() + current.vote());
+            current = current.addTo(vote);
         } else {
             current = vote;
         }
         this.votes.add(current);
         this.cache.put(current.productId(), current);
+    }
+
+    public List<Statistic> averages() {
+        return votes
+            .stream()
+            .map(Statistic::new)
+            .distinct()
+            .sorted()
+            .toList();
     }
 
     public int top() {
